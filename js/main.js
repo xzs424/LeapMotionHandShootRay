@@ -135,7 +135,7 @@ var groundMaterial = new THREE.MeshNormalMaterial();
 var groundMesh 	= new THREE.Mesh(groundGeometry, groundMaterial);
 groundMesh.position.set(0,0,-2);
 
-var ground = new MeshBody(groundMesh,groundBody, {rayCastable: false, syncable : false });
+var ground = new MeshBody(groundMesh,groundBody, {rayCastable: false, syncable : false, collidable: false });
 physicScene.addObject(ground);
 
 var groundGrid = new THREE.GridHelper(1000,1);
@@ -242,7 +242,7 @@ controller.on('frame',function (frame){
 
 	stats.begin();
 
-	var hand = frame.hands[0];
+	scene.updateMatrixWorld();
 	
 	rayCasterManager.removeAllRays(window.scene);
 
@@ -250,56 +250,70 @@ controller.on('frame',function (frame){
 
 		var hand = frame.hands[i];
 		
-		var handMesh = hand.data('riggedHand.mesh');
+		
 		uiContent.handType = hand.type;
 		uiContent.indexFinger=roundArray(hand.indexFinger.tipPosition);
 		uiContent.indexDirection=roundArray(hand.indexFinger.direction);
-		rayCasterManager.createRayCasterByFinger(hand.type+'index', hand.indexFinger, rayDistance, rayMaterial, window.scene);
+
+		rayCasterManager.createRayCasterByFinger(hand.type+i+'index', hand.indexFinger, rayDistance, rayMaterial, window.scene);
 		
-				
 
 	}
 
 	var meshBodies = physicScene.getMeshBodies({rayCastable: true, syncable: true, collidable: true});
 
-	meshBodies.forEach(function(meshBody,index,array){
+
+	for (var i = 0 ; i < meshBodies.length ; i++){
+
+		var meshBody = meshBodies[i];
 
 		var isHit = false;
 
-		var object = meshBody.mesh;
+		//console.log(meshBody.mesh);
+		scene.remove(meshBody.mesh.edges);
 
-		scene.remove(object.edges);
+		meshBody.mesh.edges = new THREE.EdgesHelper(meshBody.mesh,edgeColor);
 
-		object.edges = new THREE.EdgesHelper(object,edgeColor);
-
-		scene.add(object.edges);
-
+		scene.add(meshBody.mesh.edges);
 
 		for ( var rayName in rayCasterManager.rays){
+			
 
-		
 			var ray_caster = rayCasterManager.rays[rayName];
 			var intersect = ray_caster.intersectObject(meshBody.mesh)[0];
+			
 
-			if (intersect) isHit = true ;
+			if (intersect){
+				//console.log(intersect);
+				isHit = true ;
 
-		}
-
-		if(isHit){
-
-			scene.remove(object.edges);
-
-			object.edges = new THREE.EdgesHelper(object,edgeColorHit);
-
-			scene.add(object.edges);
+			} 
 
 		}
-		
-	});
+
+		if(isHit == true ){
+
+			
+
+			scene.remove(meshBody.mesh.edges);
+			//meshBody.mesh.material.color.set(0x000000) 
+			meshBody.mesh.edges = new THREE.EdgesHelper(meshBody.mesh,edgeColorHit);
+
+			
+			meshBody.body.velocity.set(0,0,1);
+			scene.add(meshBody.mesh.edges);
+			
+		}
+
+
+	}
+
+	
 
 	physicScene.simulate(window.renderer,window.camera,1/fps);
 	window.renderer.render(window.scene,window.camera);
 	window.controls.update(1/fps);
+
 
 	stats.end();
 	

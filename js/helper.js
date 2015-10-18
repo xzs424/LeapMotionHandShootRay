@@ -160,7 +160,7 @@ RayCasterManager.prototype.createRayCasterByFinger = function (rayName, finger, 
 
 	rayCaster.set(tip_pos, tip_dir);
 
-	rayCaster.mesh = createRayMesh(tip_pos,tip_dir,distance,material);
+	rayCaster.mesh = createRayMesh(tip_pos,tip_dir.normalize(),distance,material);
 
 	if (scene) scene.add(rayCaster.mesh);
 
@@ -224,6 +224,8 @@ function MeshBody(mesh, body, options){
 	this.mesh = mesh;
 	this.body = body;
 	this.edges = null;
+
+	console.log(this.mesh);
 	
 
 	if (options.collidable === undefined ) this.collidable = true;
@@ -231,9 +233,13 @@ function MeshBody(mesh, body, options){
 	if (options.syncable === undefined ) this.syncable = true;
 
 	if (options.rayCastable === undefined ) this.rayCastable = true;
+
+
 	
 	this.sync();
 }
+
+MeshBody.prototype.constructor = MeshBody;
 
 MeshBody.prototype.sync = function (){
 
@@ -268,9 +274,12 @@ function BoxMeshBody(meshOptions,bodyOptions,otherOptions){
 	var len_y = meshOptions.y;
 	var len_z = meshOptions.z;
 	var material = meshOptions.material;
+
+	
 	
 	var geo = new THREE.BoxGeometry(len_x,len_y,len_z);
 	var mesh = new THREE.Mesh(geo,material);
+	
 	
 
 	var shape = new CANNON.Box( new CANNON.Vec3( len_x/2, len_y/2, len_z/2) );
