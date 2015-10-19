@@ -79,7 +79,7 @@ scene.add(camera);
 
 window.renderer = new THREE.WebGLRenderer({
 	alpha: true,
-	antialias: true,
+	antialias: false,
 	preserveDrawingBuffer: true,
 })
 
@@ -130,7 +130,7 @@ physicScene.scene = window.scene;
 
 var groundShape = new CANNON.Plane();
 var groundBody = new CANNON.Body({ mass: 0, shape: groundShape});
-var groundGeometry = new THREE.BoxGeometry(500,500,2);
+var groundGeometry = new THREE.BoxGeometry(100,100,2);
 var groundMaterial = new THREE.MeshNormalMaterial();
 var groundMesh 	= new THREE.Mesh(groundGeometry, groundMaterial);
 groundMesh.position.set(0,0,-2);
