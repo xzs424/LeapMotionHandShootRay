@@ -240,7 +240,7 @@ controller.on('riggedHand.meshRemoved',function(handMesh,leapHand){
 
 controller.on('frame',function (frame){
 
-	stats.begin();
+	//stats.begin();
 
 	scene.updateMatrixWorld();
 	
@@ -309,13 +309,7 @@ controller.on('frame',function (frame){
 	}
 
 	
-
-	physicScene.simulate(window.renderer,window.camera,1/fps);
-	window.renderer.render(window.scene,window.camera);
-	window.controls.update(1/fps);
-
-
-	stats.end();
+	//stats.end();
 	
 	
 
