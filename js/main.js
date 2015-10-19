@@ -325,6 +325,23 @@ controller.on('frame',function (frame){
 controller.connect();
 
 
+function render(){
+
+	stats.begin();
+	requestAnimationFrame(render);
+
+	physicScene.simulate(window.renderer,window.camera,1/fps);
+	window.renderer.render(window.scene,window.camera);
+	window.controls.update(1/fps);
+
+	stats.end();
+
+
+}
+
+render();
+
+
 
 
 
